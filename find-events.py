@@ -50,15 +50,40 @@ try:
     event_items = driver.find_elements(By.XPATH, "//div[@class='sc-bb566763-28 gEMIVp xs-12 md-4']")
     print(f"Total event items found: {len(event_items)}")
     
-    for event_item in event_items:
-        name = event_item.find_element(By.XPATH, ".//h3[@class='sc-2a579a92-24 bZVIvy']").text
-        dates = event_item.find_element(By.XPATH,".//div[@class='sc-2a579a92-26 EPKGt']").text
-        url = event_item.find_element(By.XPATH, ".//a[@class='link-internal']").get_attribute('href')
-
-        print(f"Name: {name}")
-        print(f"Dates: {dates}")
-        print(f"Link: {url}")
+    events_skipped = 0
     
+    for i, event_item in enumerate(event_items, 1):
+        try:
+            date_elements = event_item.find_elements(By.XPATH, ".//div[@class='sc-2a579a92-26 EPKGt']")
+            
+            if len(date_elements) == 0:
+                events_skipped += 1
+                print(f"Event {i}: Skipped (no dates)")
+                continue
+            
+        
+            name = event_item.find_element(By.XPATH, ".//h3[@class='sc-2a579a92-24 bZVIvy']").text
+            dates = date_elements[0].text
+            event_url = event_item.find_element(By.XPATH, ".//a[@class='link-internal']").get_attribute('href')
+            
+            event_data = {
+                'name': name,
+                'dates': dates,
+                'url': event_url
+            }
+            events.append(event_data)
+            
+            print(f"\nEvent {i}:")
+            print(f"Name: {name}")
+            print(f"Dates: {dates}")
+            print(f"Link: {event_url}")
+            
+        except Exception as e:
+            print(f"Error extracting event {i}: {e}")
+            events_skipped += 1
+            continue
+    
+    print(f"Total items processed: {len(event_items)}")
     
 except Exception as e:
     print(f"Error: {e}")
