@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import json
 
 url = "https://www.visitcopenhagen.com/explore/events-cid58/events-cid59?filters=region:2"
 
@@ -90,3 +91,7 @@ except Exception as e:
     
 finally:
     driver.quit()
+
+with open('copenhagen_events.json', 'w', encoding='utf-8') as f:
+    json.dump(events, f, ensure_ascii=False, indent=2)
+print("\nEvents saved to copenhagen_events.json")
